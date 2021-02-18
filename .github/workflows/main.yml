@@ -28,10 +28,26 @@ jobs:
           fetch-depth: "1"
       - name: Cleanup
         uses: rokibhasansagar/slimhub_actions@main
-      - name: Running Userge
+      - name: Add ngrok Session
+        run: |
+          curl -sL https://gist.github.com/rokibhasansagar/077b66b16cd50e50e5ad9489084dc926/raw/ssh_keepalive.sh | bash
+          curl -sL https://gist.github.com/rokibhasansagar/077b66b16cd50e50e5ad9489084dc926/raw/ngrok2actions.sh | bash
+        env:
+          NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
+          NGROK_REGION: us
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          REPO_PURPOSE: "Primary UserGE Runner"
+      - name: Build and Run Userge
         timeout-minutes: 340
         continue-on-error: true
         run: |
+          while ((${SECONDS_LEFT:=5} > 0)); do
+            printf "Please wait %ss ...\n" "${SECONDS_LEFT}"
+            sleep 1
+            SECONDS_LEFT=$((${SECONDS_LEFT} - 1))
+          done && unset SECONDS_LEFT
           echo "::group::Prepare Repos"
           git clone ${{ secrets.USERGEREPO }} bot && cd bot
           curl -sL ${{ secrets.USERGIST_CONFIG }} -o config.env
