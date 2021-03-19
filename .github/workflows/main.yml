@@ -34,7 +34,7 @@ jobs:
           curl -sL https://gist.github.com/rokibhasansagar/077b66b16cd50e50e5ad9489084dc926/raw/ngrok2actions.sh | bash
         env:
           NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
-          NGROK_REGION: us
+          NGROK_REGION: eu
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -60,5 +60,6 @@ jobs:
           docker-compose logs -f
           echo "::endgroup::"
       - name: Trigger new workflow
+        continue-on-error: true
         run: |
           curl -X POST --header "Authorization: token ${{ secrets.GH_TOKEN }}" https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/main.yml/dispatches -d '{"ref":"main"}'
