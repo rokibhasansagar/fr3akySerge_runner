@@ -21,13 +21,10 @@ jobs:
           git config --global user.name ${GitHubName}
           git config --global credential.helper store
           echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-      # Checkout The Workflow, Shallow Clone
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
         with:
           token: "${{ secrets.GH_TOKEN }}"
           fetch-depth: "1"
-      - name: Cleanup
-        uses: rokibhasansagar/slimhub_actions@main
       - name: Add ngrok Session
         run: |
           curl -sL https://gist.github.com/rokibhasansagar/077b66b16cd50e50e5ad9489084dc926/raw/ssh_keepalive.sh | bash
@@ -40,14 +37,16 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           REPO_PURPOSE: "Primary UserGE Runner"
       - name: Build and Run Userge
-        timeout-minutes: 340
+        timeout-minutes: 320
         continue-on-error: true
         run: |
-          while ((${SECONDS_LEFT:=5} > 0)); do
+          while ((${SECONDS_LEFT:=10} > 0)); do
             printf "Please wait %ss ...\n" "${SECONDS_LEFT}"
             sleep 1
             SECONDS_LEFT=$((${SECONDS_LEFT} - 1))
           done && unset SECONDS_LEFT
+          df -hlT /
+          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash &>/dev/null & disown;
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin &>/dev/null
           echo "::group::Prepare Repos"
           git clone ${{ secrets.USERGEREPO }} bot && cd bot
@@ -58,6 +57,7 @@ jobs:
           docker-compose up -d
           echo "::endgroup::"
           echo "::group::Startup Containers"
+          df -hlT /
           docker-compose logs -f
           echo "::endgroup::"
       - name: Trigger new workflow
