@@ -1,9 +1,6 @@
-name: CI
+name: Serge CI
 
 on:
-  push:
-    branches: [ main ]
-    paths-ignore: 'README.md'
   workflow_dispatch:
 
 jobs:
@@ -37,16 +34,14 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           REPO_PURPOSE: "Primary UserGE Runner"
       - name: Build and Run Userge
-        timeout-minutes: 320
+        timeout-minutes: 340
         continue-on-error: true
         run: |
-          while ((${SECONDS_LEFT:=10} > 0)); do
+          while ((${SECONDS_LEFT:=5} > 0)); do
             printf "Please wait %ss ...\n" "${SECONDS_LEFT}"
             sleep 1
             SECONDS_LEFT=$((${SECONDS_LEFT} - 1))
           done && unset SECONDS_LEFT
-          df -hlT /
-          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash &>/dev/null & disown;
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin &>/dev/null
           echo "::group::Prepare Repos"
           git clone ${{ secrets.USERGEREPO }} bot && cd bot
@@ -57,7 +52,7 @@ jobs:
           docker-compose up -d
           echo "::endgroup::"
           echo "::group::Startup Containers"
-          df -hlT /
+          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash &>/dev/null & disown;
           docker-compose logs -f
           echo "::endgroup::"
       - name: Trigger new workflow
