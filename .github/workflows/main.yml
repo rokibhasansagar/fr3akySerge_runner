@@ -49,10 +49,10 @@ jobs:
           curl -sL ${{ secrets.USERGIST_COMPOSE }} -o docker-compose.yml
           echo "::endgroup::"
           echo "::group::Build Containers"
-          docker-compose up -d
+          docker-compose up -d &
+          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash 2>/dev/null
           echo "::endgroup::"
           echo "::group::Startup Containers"
-          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash 2>/dev/null &;
           docker-compose logs -f
           echo "::endgroup::"
       - name: Trigger new workflow
