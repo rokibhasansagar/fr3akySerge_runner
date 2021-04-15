@@ -34,7 +34,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           REPO_PURPOSE: "Primary UserGE Runner"
       - name: Build and Run Userge
-        timeout-minutes: 340
+        timeout-minutes: 350
         continue-on-error: true
         run: |
           while ((${SECONDS_LEFT:=5} > 0)); do
@@ -52,7 +52,7 @@ jobs:
           docker-compose up -d
           echo "::endgroup::"
           echo "::group::Startup Containers"
-          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash &>/dev/null & disown;
+          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash 2>/dev/null &;
           docker-compose logs -f
           echo "::endgroup::"
       - name: Trigger new workflow
