@@ -3,28 +3,20 @@ name: Serge CI
 on:
   workflow_dispatch:
 
+env:
+  PAT: ${{ secrets.GH_TOKEN }}
+
 jobs:
   build:
     runs-on: ubuntu-20.04
 
-    env:
-      GitHubMail: ${{ secrets.GitHubMail }}
-      GitHubName: ${{ secrets.GitHubName }}
-
     steps:
-      - name: Set Git Config & Token
-        run: |
-          git config --global user.email ${GitHubMail}
-          git config --global user.name ${GitHubName}
-          git config --global credential.helper store
-          echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-      - uses: actions/checkout@main
-        with:
-          token: "${{ secrets.GH_TOKEN }}"
-          fetch-depth: "1"
+      - name: Set Git Configs & Secrets
+        uses: rokibhasansagar/custom_workflows/git_config@main
+      - name: SSH Keepalive
+        uses: rokibhasansagar/custom_workflows/ssh_keepalive@main
       - name: Add ngrok Session
         run: |
-          curl -sL https://gist.github.com/rokibhasansagar/077b66b16cd50e50e5ad9489084dc926/raw/ssh_keepalive.sh | bash
           curl -sL https://gist.github.com/rokibhasansagar/077b66b16cd50e50e5ad9489084dc926/raw/ngrok2actions.sh | bash
         env:
           NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
@@ -58,4 +50,4 @@ jobs:
       - name: Trigger new workflow
         continue-on-error: true
         run: |
-          curl -X POST --header "Authorization: token ${{ secrets.GH_TOKEN }}" https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/main.yml/dispatches -d '{"ref":"main"}'
+          curl -X POST --header "Authorization: token ${PAT}" https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/main.yml/dispatches -d '{"ref":"main"}'
