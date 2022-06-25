@@ -36,7 +36,7 @@ jobs:
           done && unset SECONDS_LEFT
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin &>/dev/null
           echo "::group::Prepare Repos"
-          git clone ${{ secrets.USERGEREPO }} bot && cd bot
+          git clone --filter blob:none https://github.com/UsergeTeam/Loader.git bot && cd bot
           curl -sL ${{ secrets.USERGIST_CONFIG }} -o config.env
           curl -sL ${{ secrets.USERGIST_COMPOSE }} -o docker-compose.yml
           echo "::endgroup::"
