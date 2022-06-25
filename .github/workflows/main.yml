@@ -42,7 +42,8 @@ jobs:
           echo "::endgroup::"
           echo "::group::Build Containers"
           docker-compose up -d &
-          sleep 20s && curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash 2>/dev/null
+          sleep 45s
+          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash 2>/dev/null
           echo "::endgroup::"
           echo "::group::Startup Containers"
           docker-compose logs -f
