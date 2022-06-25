@@ -41,12 +41,13 @@ jobs:
           curl -sL ${{ secrets.USERGIST_COMPOSE }} -o docker-compose.yml
           echo "::endgroup::"
           echo "::group::Build Containers"
-          docker-compose up -d &
-          sleep 45s
-          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash 2>/dev/null
+          docker-compose up -d
           echo "::endgroup::"
+          sleep 5s
           echo "::group::Startup Containers"
-          docker-compose logs -f
+          docker-compose logs -f &
+          sleep 60s
+          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash 2>/dev/null
           echo "::endgroup::"
       - name: Trigger new workflow
         continue-on-error: true
