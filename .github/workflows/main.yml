@@ -39,6 +39,8 @@ jobs:
           git clone --filter blob:none ${{ secrets.USERGEREPO }} bot && cd bot
           curl -sL ${{ secrets.USERGIST_CONFIG }} -o config.env
           curl -sL ${{ secrets.USERGIST_COMPOSE }} -o docker-compose.yml
+          echo "aiofiles" >>requirements.txt
+          bash ./install_req
           echo "::endgroup::"
           echo "::group::Build Containers"
           docker-compose up -d
