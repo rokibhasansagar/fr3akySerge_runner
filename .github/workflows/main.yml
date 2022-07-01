@@ -49,7 +49,8 @@ jobs:
           echo "::group::Startup Containers"
           docker-compose logs -f &
           sleep 60s
-          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash 2>/dev/null
+          curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | sed '$d' | bash 2>/dev/null
+          sleep 20s &
           echo "::endgroup::"
       - name: Trigger new workflow
         continue-on-error: true
